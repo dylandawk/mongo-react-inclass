@@ -4,6 +4,7 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
+const mongouri = process.env.MONGODB_URI || "mongodb://localhost:27017/dumbtwitter";
 const mongo = require("mongodb").MongoClient;
 
 let dbclient;
@@ -54,7 +55,7 @@ app.get("/counter", async (req, res) =>{
 
 // listen for requests :)
 
-mongo.connect("mongodb://localhost:27017/dumbtwitter", {
+mongo.connect(mongouri, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then((client) => {
