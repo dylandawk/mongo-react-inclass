@@ -6,8 +6,17 @@ const app = express();
 const port = process.env.PORT || 3000;
 const mongouri = process.env.MONGODB_URI || "mongodb://localhost:27017/dumbtwitter";
 const mongo = require("mongodb").MongoClient;
+//body-parser middleware
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
 
 let dbclient;
+
+const dummyData = [
+  {user: "Alex", message: "First Comment"}, 
+  {user: "Mary", message: "Hi Internet!"},
+  {user: "Alex", message: "You suck!"}
+];
 
 // Special piece for running with webpack dev server
 if (process.env.NODE_ENV === "development") {
@@ -30,6 +39,28 @@ app.use(express.static('public'));
 app.get("/", function(request, response) {
   response.sendFile(__dirname + '/app/index.html');
 });
+
+
+//Fetch tweets from the database
+app.get("/api/tweets", async(req,res) => {
+  const tweetsCollection = await dbclient.collection("tweets");
+  const tweets = tweetsCollection.find({});
+  res.json(await tweets.toArray());
+});
+
+//Post a new tweet
+app.post("/api/tweet", async (req,res) =>{
+  const body = req.body;
+  const user = body.user;
+  const message = body.message;
+  if(!user || !message){
+    res.status(400).send("Missing user or message")
+  } else {
+    const tweetsCollection = await dbclient.collection("tweets");
+    tweetsCollection .insert({user,message});
+    res.sendStatus(200);
+  }
+})
 
 app.get("/counter", async (req, res) =>{
   //Get Collection
