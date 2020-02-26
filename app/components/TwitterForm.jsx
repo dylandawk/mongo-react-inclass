@@ -29,10 +29,6 @@ const TwitterForm = function(props)
             if (props.onTweeted) props.onTweeted();
         }
     }
-    
-    const asyncSearch = async() = {
-
-    }
 
     const handleSubmit = (event) => {
         asyncSubmit();
